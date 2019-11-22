@@ -3,7 +3,7 @@
 from pytm import TM, Server, Datastore, Dataflow, Boundary, Actor, Lambda
 
 tm = TM("my test tm")
-tm.description = "This is a sample threat model of a very simple system - a web-based comment system. The user enters comments and these are added to a database and displayed back to the user. The thought is that it is, though simple, a complete enough example to express meaningful threats."
+tm.description = "This is a sample threat model of a very simple system - a web-based comment system. The user enters comments and these are added to a database and displayed back to the user. The thought is that it is, though simple, a complete enough example to express meaningful threats. "
 
 internet = Boundary("Internet")
 server_db = Boundary("Server/DB")
