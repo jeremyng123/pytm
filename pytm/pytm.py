@@ -979,7 +979,7 @@ class Boundary(Element):
         self._is_drawn = True
         logger.debug("Now drawing boundary " + self.name)
         label = self.name
-        print("subgraph cluster_{0} {{\n\tgraph [\n\t\tfontsize = 10;\n\t\tfontcolor = firebrick2;\n\t\tstyle = dashed;\n\t\tcolor = firebrick2;\n\t\tlabel = <<i>{1}</i>>;\n\t]\n".format(self._uniq_name(), label))
+        print("subgraph {0} {{\n\tgraph [\n\t\tfontsize = 10;\n\t\tfontcolor = firebrick2;\n\t\tstyle = dashed;\n\t\tcolor = firebrick2;\n\t\tlabel = <<i>{1}</i>>;\n\t]\n".format(self._uniq_name(), label))
         for e in TM._BagOfElements:
             if e.inBoundary == self and not e._is_drawn:
                 # The content to draw can include Boundary objects
