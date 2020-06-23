@@ -2,7 +2,7 @@
 
 import random
 
-from pytm import TM, Actor, Boundary, Dataflow, Datastore, Lambda, Server
+from pytm.pytm import TM, Actor, Boundary, Dataflow, Datastore, Lambda, Server
 
 # make sure generated diagrams do not change, makes sense if they're commited
 random.seed(0)

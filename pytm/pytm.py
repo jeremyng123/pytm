@@ -4,7 +4,7 @@ import json
 import logging
 import random
 import sys
-import uuid
+# import uuid
 from collections import defaultdict
 from collections.abc import Iterable
 from enum import Enum
@@ -531,6 +531,7 @@ class Element():
     """A generic element"""
 
     name = varString("", required=True)
+    key = varString("")     # this is to be used in pytm_server, for drawing. This attribute is used in _uniq_name()
     description = varString("")
     inBoundary = varBoundary(None, doc="Trust boundary this element exists in")
     inScope = varBool(True, doc="Is the element in scope of the threat model")
@@ -554,7 +555,7 @@ hash functions.""")
         for key, value in kwargs.items():
             setattr(self, key, value)
         self.name = name
-        self.uuid = uuid.UUID(int=random.getrandbits(128))
+        # self.uuid = uuid.UUID(int=random.getrandbits(128))
         self._is_drawn = False
         TM._BagOfElements.append(self)
 
@@ -566,11 +567,26 @@ hash functions.""")
     def __str__(self):
         return "{0}({1})".format(type(self).__name__, self.name)
 
+    """
+    since this pytm acts as a server, assume all names that come here are unique
+    we do not need to do the hash at all. however,
+    to ensure that the pytm acts as it is, we continue to use this function, with a
+    changed functionality.
+    
+    Below is the original function (commented)
+    """
+    # def _uniq_name(self):
+    #     ''' transform name and uuid into a unique string '''
+    #     h = sha224(str(self.uuid).encode('utf-8')).hexdigest()
+    #     name = "".join(x for x in self.name if x.isalpha())
+    #     return "{0}_{1}_{2}".format(type(self).__name__.lower(), name, h[:10])
+
     def _uniq_name(self):
-        ''' transform name and uuid into a unique string '''
-        h = sha224(str(self.uuid).encode('utf-8')).hexdigest()
-        name = "".join(x for x in self.name if x.isalpha())
-        return "{0}_{1}_{2}".format(type(self).__name__.lower(), name, h[:10])
+        """
+        editted _uniq_name to always return the uuid key obtained from the web server
+        :return: key uuid obtained in decode_json.
+        """
+        return self.key
 
     def check(self):
         return True
