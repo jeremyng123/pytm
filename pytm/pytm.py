@@ -485,14 +485,14 @@ class TM():
         print("@startuml")
         for e in TM._BagOfElements:
             if isinstance(e, Actor):
-                print("actor \"{0}\" as \"{1}\"".format(e._uniq_name(), e.name))
+                print("actor {0} as {1}".format(e._uniq_name(), e.name))
             elif isinstance(e, Datastore):
-                print("database \"{0}\" as \"{1}\"".format(e._uniq_name(), e.name))
+                print("database {0} as {1}".format(e._uniq_name(), e.name))
             elif not isinstance(e, Dataflow) and not isinstance(e, Boundary):
-                print("entity \"{0}\" as \"{1}\"".format(e._uniq_name(), e.name))
+                print("entity {0} as {1}".format(e._uniq_name(), e.name))
 
         for e in TM._BagOfFlows:
-            print("\"{0}\" -> {1}: {2}".format(e.source._uniq_name(), e.sink._uniq_name(), e.name))
+            print("{0} -> {1}: {2}".format(e.source._uniq_name(), e.sink._uniq_name(), e.name))
             if e.note != "":
                 print("note left\n{}\nend note".format(e.note))
         print("@enduml")
@@ -595,7 +595,7 @@ hash functions.""")
         self._is_drawn = True
         color = _setColor(self)
         label = _setLabel(self)
-        print("\"{0}\" [\n\tshape = square;\n\tcolor = {1};\n\tfontcolor = {1};".format(self._uniq_name(), color))
+        print("{0} [\n\tshape = square;\n\tcolor = {1};\n\tfontcolor = {1};".format(self._uniq_name(), color))
         print('\tlabel = <<table border="0" cellborder="0" cellpadding="2"><tr><td><b>{0}</b></td></tr></table>>;'.format(label))
         print("]")
 
@@ -698,7 +698,7 @@ class Lambda(Element):
         color = _setColor(self)
         pngpath = dirname(__file__) + "/images/lambda.png"
         label = _setLabel(self)
-        print('\"{0}\" [\n\tshape = none\n\tfixedsize=shape\n\timage="{2}"\n\timagescale=true\n\tcolor = {1};\n\tfontcolor = {1};'.format(self._uniq_name(), color, pngpath))
+        print('{0} [\n\tshape = none\n\tfixedsize=shape\n\timage="{2}"\n\timagescale=true\n\tcolor = {1};\n\tfontcolor = {1};'.format(self._uniq_name(), color, pngpath))
         print('\tlabel = <<table border="0" cellborder="0" cellpadding="2"><tr><td><b>{}</b></td></tr></table>>;'.format(label))
         print("]")
 
@@ -754,7 +754,7 @@ that are necessary for its legitimate purpose.""")
         self._is_drawn = True
         color = _setColor(self)
         label = _setLabel(self)
-        print("\"{0}\" [\n\tshape = circle\n\tcolor = {1};\n\tfontcolor = {1};".format(self._uniq_name(), color))
+        print("{0} [\n\tshape = circle\n\tcolor = {1};\n\tfontcolor = {1};".format(self._uniq_name(), color))
         print('\tlabel = <<table border="0" cellborder="0" cellpadding="2"><tr><td><b>{}</b></td></tr></table>>;'.format(label))
         print("]")
 
@@ -808,7 +808,7 @@ that are necessary for its legitimate purpose.""")
         self._is_drawn = True
         color = _setColor(self)
         label = _setLabel(self)
-        print("\"{0}\" [\n\tshape = none;\n\tcolor = {1};\n\tfontcolor = {1};".format(self._uniq_name(), color))
+        print("{0} [\n\tshape = none;\n\tcolor = {1};\n\tfontcolor = {1};".format(self._uniq_name(), color))
         print('\tlabel = <<table sides="TB" cellborder="0" cellpadding="2"><tr><td><b>{0}</b></td></tr></table>>;'.format(label))
         print("]")
 
@@ -829,7 +829,7 @@ class Actor(Element):
         self._is_drawn = True
         color = _setColor(self)
         label = _setLabel(self)
-        print("\"{0}\" [\n\tshape = square;\n\tcolor = {1};\n\tfontcolor = {1};".format(self._uniq_name(), color))
+        print("{0} [\n\tshape = square;\n\tcolor = {1};\n\tfontcolor = {1};".format(self._uniq_name(), color))
         print('\tlabel = <<table border="0" cellborder="0" cellpadding="2"><tr><td><b>{0}</b></td></tr></table>>;'.format(label))
         print("]")
 
@@ -891,7 +891,7 @@ and only the user has), and inherence (something the user and only the user is).
         self._is_drawn = True
         color = _setColor(self)
         label = _setLabel(self)
-        print("\"{0}\" [\n\tshape = circle;\n\tcolor = {1};\n\tfontcolor = {1};".format(self._uniq_name(), color))
+        print("{0} [\n\tshape = circle;\n\tcolor = {1};\n\tfontcolor = {1};".format(self._uniq_name(), color))
         print('\tlabel = <<table border="0" cellborder="0" cellpadding="2"><tr><td><b>{0}</b></td></tr></table>>;'.format(label))
         print("]")
 
@@ -905,7 +905,7 @@ class SetOfProcesses(Process):
         self._is_drawn = True
         color = _setColor(self)
         label = _setLabel(self)
-        print("\"{0}\" [\n\tshape = doublecircle;\n\tcolor = {1};\n\tfontcolor = {1};".format(self._uniq_name(), color))
+        print("{0} [\n\tshape = doublecircle;\n\tcolor = {1};\n\tfontcolor = {1};".format(self._uniq_name(), color))
         print('\tlabel = <<table border="0" cellborder="0" cellpadding="2"><tr><td><b>{0}</b></td></tr></table>>;'.format(label))
         print("]")
 
@@ -954,7 +954,7 @@ class Dataflow(Element):
             if self.response.order >= 0:
                 resp_label = "({0}) {1}".format(self.response.order, resp_label)
             label += "<br/>" + resp_label
-        print("\t\"{0}\" -> {1} [\n\t\tcolor = {2};\n\t\tfontcolor = {2};\n\t\tdir = {3};\n".format(
+        print("\t{0} -> {1} [\n\t\tcolor = {2};\n\t\tfontcolor = {2};\n\t\tdir = {3};\n".format(
             self.source._uniq_name(),
             self.sink._uniq_name(),
             color,
@@ -979,7 +979,7 @@ class Boundary(Element):
         self._is_drawn = True
         logger.debug("Now drawing boundary " + self.name)
         label = self.name
-        print("subgraph \"{0}\" {{\n\tgraph [\n\t\tfontsize = 10;\n\t\tfontcolor = firebrick2;\n\t\tstyle = dashed;\n\t\tcolor = firebrick2;\n\t\tlabel = <<i>{1}</i>>;\n\t]\n".format(self._uniq_name(), label))
+        print("subgraph {0} {{\n\tgraph [\n\t\tfontsize = 10;\n\t\tfontcolor = firebrick2;\n\t\tstyle = dashed;\n\t\tcolor = firebrick2;\n\t\tlabel = <<i>{1}</i>>;\n\t]\n".format(self._uniq_name(), label))
         for e in TM._BagOfElements:
             if e.inBoundary == self and not e._is_drawn:
                 # The content to draw can include Boundary objects
