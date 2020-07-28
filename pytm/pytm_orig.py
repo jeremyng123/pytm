@@ -90,13 +90,6 @@ class varInt(var):
             raise ValueError("expecting an integer value, got a {}".format(type(value)))
         super().__set__(instance, value)
 
-class varFloat(var):
-
-    def __set__(self, instance, value):
-        if not isinstance(value, float):
-            raise ValueError("expecting an float value, got a {}".format(type(value)))
-        super().__set__(instance, value)
-
 
 class varElement(var):
 
@@ -132,65 +125,6 @@ class varFindings(var):
                 )
         super().__set__(instance, list(value))
 
-
-class varNameUUID(var):
-
-    def __set__(self, instance, value):
-        for i, e in enumerate(value):
-            if not isinstance(e, NameUUID):
-                raise ValueError(
-                    "expecting a list of Findings, item number {} is a {}".format(
-                        i, type(value)
-                    )
-                )
-        super().__set__(instance, list(value))
-class varStride(var):
-
-    def __set__(self, instance, value):
-        for i, e in enumerate(value):
-            if not isinstance(e, Stride):
-                raise ValueError(
-                    "expecting a list of Findings, item number {} is a {}".format(
-                        i, type(value)
-                    )
-                )
-        super().__set__(instance, list(value))
-
-class varCapec(var):
-
-    def __set__(self, instance, value):
-        for i, e in enumerate(value):
-            if not isinstance(e, Capec):
-                raise ValueError(
-                    "expecting a list of Findings, item number {} is a {}".format(
-                        i, type(value)
-                    )
-                )
-        super().__set__(instance, list(value))
-
-class varCwe1(var):
-
-    def __set__(self, instance, value):
-        for i, e in enumerate(value):
-            if not isinstance(e, Cwe1):
-                raise ValueError(
-                    "expecting a list of Findings, item number {} is a {}".format(
-                        i, type(value)
-                    )
-                )
-        super().__set__(instance, list(value))
-
-class varCwe2(var):
-
-    def __set__(self, instance, value):
-        for i, e in enumerate(value):
-            if not isinstance(e, Cwe2):
-                raise ValueError(
-                    "expecting a list of Findings, item number {} is a {}".format(
-                        i, type(value)
-                    )
-                )
-        super().__set__(instance, list(value))
 
 class varAction(var):
 
@@ -356,126 +290,6 @@ def _get_elements_and_boundaries(flows):
 ''' End of help functions '''
 
 
-class NameUUID():
-    """Represents NameUUID of the component"""
-    name_uuid = varString("", required=True)
-    children = varStride([]) # this points to the class object for STRIDE
-
-    def __init__(self, name_uuid, stride_dict):
-        self.name_uuid = name_uuid
-        stride = []
-        for cat, root_node_dict in stride_dict.items():
-            if root_node_dict is not None:
-                # print(f"root_node_dict : {root_node_dict} and type: {type(root_node_dict)}")
-                stride.append(Stride(cat, root_node_dict.get('name', ''),
-                                     float(root_node_dict.get('score', '')),
-                                     root_node_dict.get('children', '')))
-            else:
-                stride.append(Stride(cat))
-
-        self.children = stride
-
-
-    def __str__(self):
-        return f"{type(self).__name__}:\n\r" \
-                    f"name_uuid{self.name_uuid}\n\r" \
-                    f"children:{self.children}"
-
-
-"""Added the following classes so that the template can parse the threats generated from Attack Tree perspective """
-class Stride():
-    """Represents a STRIDE - the element in question and a description of the CAPEC """
-    cat = varString("", required=True)
-    name = varString("", required=True)
-    score = varFloat(0.0, required=True)
-    children = varCapec([]) # this points to the class object for CAPEC
-    def __init__(self, cat, name=None, score=None, children=None):
-        self.cat = cat
-        if name is not None and score is not None and children is not None:
-            self.name = name
-            self.score = score
-            capec = []
-            for CAPEC_dict in children:
-                capec.append(Capec(CAPEC_dict['id'],
-                                   CAPEC_dict['name'],
-                                   CAPEC_dict['description'],
-                                   float(CAPEC_dict['score']),
-                                   CAPEC_dict['children']))
-            self.children = capec
-
-
-
-
-
-
-"""Added the following classes so that the template can parse the threats generated from Attack Tree perspective """
-class Capec():
-    """Represents a CAPEC - the element in question and a description of the CAPEC """
-
-    # element = varElement(None, required=True, doc="Element this finding applies to")
-    # target = varString("", doc="Name of the element this finding applies to")
-    id = varString("", required=True, doc="CAPEC ID")
-    name = varString("", doc="Name of the CAPEC threat")
-    description = varString("", required=True, doc="Threat description")
-    score = varFloat(0.0, required=True, doc="The threat score. 1 being very severe, 0 being least severe")
-    children = varCwe1([], doc="CWE threats related to CAPEC threat")
-
-    def __init__(self, id, name, description, score, children):
-        self.id = id
-        self.name = name
-        self.description = description
-        self.score = score
-        cwe = []
-        for CWE_dict in children:
-            cwe.append(Cwe1(CWE_dict['id'],
-                            CWE_dict['name'],
-                            CWE_dict['description'],
-                            float(CWE_dict['score']),
-                            CWE_dict['children']))
-        self.children = cwe
-
-    def __str__(self):
-        return f"{type(self).__name__}\n\r"\
-                    f"description: {self.description}, name: {self.name}, " \
-                    f"score: {self.score}, id: {self.id}, children: {self.children}"
-
-
-class Cwe1():
-    """Represents a CWE - related to the CAPEC threat and a description of the CWE """
-
-    id = varString("", required=True, doc="CWE ID")
-    name = varString("", doc="Name of the CWE threat")
-    description = varString("", required=True, doc="CWE threat description")
-    score = varFloat(0.0, required=True, doc="The threat score. 1 being very severe, 0 being least severe")
-    children = varCwe2([], doc="mitigations")
-
-    def __init__(self, id, name, description, score, children):
-        self.id = id
-        self.name = name
-        self.description = description
-        self.score = score
-        cwe2 = []
-        for cwe2_dict in children:
-            cwe2.append(Cwe2(cwe2_dict.get('name','')))
-        self.children = cwe2
-
-    def __str__(self):
-        return f"id: {self.id}, name: {self.name}, description: {self.description}" \
-               f"score: {self.score}, children: {self.children}"
-
-
-class Cwe2():
-    """Represents a Finding - the element in question and a description of the finding """
-
-    name = varString("", required=True, doc="Threat mitigations")
-
-    def __init__(self, name):
-        self.name = name
-
-
-    def __str__(self):
-        return f"name: {self.name}"
-
 class Threat():
     """Represents a possible threat"""
 
@@ -543,13 +357,6 @@ class Finding():
         self.id = id
         self.references = references
 
-    def __str__(self):
-        return f"target: {self.target}, element: {self.element}, description: {self.description}, details: {self.details}, " \
-               f"severity: {self.severity}, mitigations: {self.mitigations}, example: {self.example}, id: {self.id}, references: {self.references}"
-
-
-
-
 
 class TM():
     """Describes the threat model administratively, and holds all details during a run"""
@@ -563,25 +370,21 @@ class TM():
     _duplicate_ignored_attrs = "name", "note", "order", "response", "responseTo"
     name = varString("", required=True, doc="Model name")
     description = varString("", required=True, doc="Model description")
-    threatsFile = varString("", required=True, doc="threat libraries")
+    threatsFile = varString(dirname(__file__) + "/threatlib/threats.json",
+                            onSet=lambda i, v: i._init_threats(),
+                            doc="JSON file with custom threats")
     isOrdered = varBool(False, doc="Automatically order all Dataflows")
     mergeResponses = varBool(False, doc="Merge response edges in DFDs")
     ignoreUnused = varBool(False, doc="Ignore elements not used in any Dataflow")
-    nameUUIDobj = varNameUUID([], doc="threats found for elements of this model")
+    findings = varFindings([], doc="threats found for elements of this model")
     onDuplicates = varAction(Action.NO_ACTION, doc="How to handle duplicate Dataflow with same properties, except name and notes")
 
-    def __init__(self, name, report=None, threatsFile=None, **kwargs):
+    def __init__(self, name, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
         self.name = name
         self._sf = SuperFormatter()
-        self._report = report
-        if report is not None:
-            if threatsFile is not None:
-                self.threatsFile = dirname(__file__) + "/../../" + threatsFile
-            else:
-                self.threatsFile = dirname(__file__) + "/threatlib/threats.json"
-        # self._add_threats()
+        self._add_threats()
 
     @classmethod
     def reset(cls):
@@ -590,77 +393,32 @@ class TM():
         cls._BagOfThreats = []
         cls._BagOfBoundaries = []
 
-    def populate_threats(self, component_threats=None):
-        return self._init_threats(component_threats)
-
-    def _init_threats(self,component_threats=None):
+    def _init_threats(self):
         TM._BagOfThreats = []
-        return self._add_threats(component_threats)
+        self._add_threats()
 
-    def _add_threats(self, component_threats=None):
-        threats_json = None
-        f = []
-        """
-        reading the json file is not working because it requires the key and value to be in the same line.
-        see '/pytm/pytm/threatlib/threats.json'
-        """
-        if component_threats is None:
-            with open(self.threatsFile) as f:
-                component_threats = json.load(f)
-        else:
-            for name_uuid, stride_dict in component_threats.items():
-                f.append(NameUUID(name_uuid=name_uuid, stride_dict=stride_dict))
-        self.nameUUIDobj = f
+    def _add_threats(self):
+        with open(self.threatsFile, "r", encoding="utf8") as threat_file:
+            threats_json = json.load(threat_file)
 
+        for i in threats_json:
+            TM._BagOfThreats.append(Threat(**i))
 
-
-
-
-    # def resolve(self):
-    #     name_uuid = []
-    #     elements = defaultdict(list)
-    #     # print(f"GOT HERE: {findings}")
-    #     for t in TM._BagOfThreats:
-    #         f = NameUUID()
-    #         findings.append(f)
-    #     # print(f"findings: {findings}")
-    #     self.findings = findings
-    #     # print(self.findings)
-    #     for e, findings in elements.items():
-    #         e.findings = findings
-
-    # def resolve(self):
-    #     findings = []
-    #     capeclist = []
-    #     cwelist1 = []
-    #     cwelist2 = []
-    #     elements = defaultdict(list)
-    #     # print(f"GOT HERE: {findings}")
-    #     for e in TM._BagOfElements:
-    #         # print(f"e: {e}")
-    #         if not e.inScope:
-    #             continue
-    #         for t in TM._BagOfThreats:
-    #             # if not t.apply(e):
-    #             #     # print(e, t)
-    #             #     continue
-    #             if len(t.children) > 0:
-    #                 for cwedict in t.children:
-    #                     if 'children' in cwedict.keys():
-    #                         if len(cwedict['children']) > 0:
-    #                             for mitidict in cwedict['children']:
-    #                                 print(f'{t.id}Just checking if this mitidict has more than 1 element in the list, which shouldn\'t be the case')
-    #                                 cwedict['children'] = Cwe2(mitidict['name'])
-    #
-    #
-    #
-    #             findings.append(f)
-    #             elements[e].append(f)
-    #     # print(f"findings: {findings}")
-    #     self.findings = findings
-    #     # print(self.findings)
-    #     for e, findings in elements.items():
-    #         e.findings = findings
+    def resolve(self):
+        findings = []
+        elements = defaultdict(list)
+        for e in TM._BagOfElements:
+            if not e.inScope:
+                continue
+            for t in TM._BagOfThreats:
+                if not t.apply(e):
+                    continue
+                f = Finding(e, t.description, t.details, t.severity, t.mitigations, t.example, t.id, t.references)
+                findings.append(f)
+                elements[e].append(f)
+        self.findings = findings
+        for e, findings in elements.items():
+            e.findings = findings
 
     def check(self):
         if self.description is None:
@@ -707,7 +465,7 @@ class TM():
 
     def dfd(self):
         print("digraph tm {\n\tgraph [\n\tfontname = Arial;\n\tfontsize = 14;\n\t]")
-        print("\tnode [\n\tstyle = filled;\n\tfillcolor = white;\n\tfontname = Arial;\n\tfontsize = 14;\n\trankdir = lr;\n\t]")
+        print("\tnode [\n\tfontname = Arial;\n\tfontsize = 14;\n\trankdir = lr;\n\t]")
         print("\tedge [\n\tshape = none;\n\tfontname = Arial;\n\tfontsize = 12;\n\t]")
         print('\tlabelloc = "t";\n\tfontsize = 20;\n\tnodesep = 1;\n')
         for b in TM._BagOfBoundaries:
@@ -740,41 +498,26 @@ class TM():
         print("@enduml")
 
     def report(self, *args, **kwargs):
-        with open(self._report) as file:
-            template = file.read()
-
-        # print(len(self.findings))
-        # print(self._sf.format(template, tm=self, dataflows=self._BagOfFlows, threats=self._BagOfThreats,
-        #                       findings=self.findings, elements=self._BagOfElements, boundaries=self._BagOfBoundaries))
-        print(self._sf.format(template, tm=self, dataflows=self._BagOfFlows, threats=self._BagOfThreats,
-                              findings=self.nameUUIDobj, elements=self._BagOfElements, boundaries=self._BagOfBoundaries))
-
-
-    def report_AT(self, *args, **kwargs):
         result = get_args()
         TM._template = result.report
         with open(self._template) as file:
             template = file.read()
 
-        print(self._sf.format(template, tm=self, dataflows=self._BagOfFlows, threats=self._BagOfThreats,
-                              findings=self.findings, elements=self._BagOfElements, boundaries=self._BagOfBoundaries))
+        print(self._sf.format(template, tm=self, dataflows=self._BagOfFlows, threats=self._BagOfThreats, findings=self.findings, elements=self._BagOfElements, boundaries=self._BagOfBoundaries))
 
-    def process_orig(self):
+    def process(self):
         self.check()
         result = get_args()
         logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
-
-        print(f'in process: {result.report}')
         if result.debug:
             logger.setLevel(logging.DEBUG)
         if result.seq is True:
             self.seq()
-        # if report is generated then we don't generate the dfd
-        if result.report is not None:
-            # self.resolve()
-            self.report()
-        elif result.dfd is True:
+        if result.dfd is True:
             self.dfd()
+        if result.report is not None:
+            self.resolve()
+            self.report()
         if result.exclude is not None:
             TM._threatsExcluded = result.exclude.split(",")
         if result.describe is not None:
@@ -782,19 +525,6 @@ class TM():
         if result.list is True:
             [print("{} - {}".format(t.id, t.description)) for t in TM._BagOfThreats]
             sys.exit(0)
-
-
-    def process(self, dfd=True):
-        self.check()
-        logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
-
-        # print(f'in process: {report}')
-        # if report is generated then we don't generate the dfd
-        if self._report is not None:
-            # self.resolve()
-            self.report()
-        elif dfd is True:
-            self.dfd()
 
 
 class Element():
@@ -1249,13 +979,16 @@ class Boundary(Element):
                 e.dfd()
         print("\n}\n")
 
+
 def get_args():
     _parser = argparse.ArgumentParser()
+    _parser.add_argument('--debug', action='store_true', help='print debug messages')
     _parser.add_argument('--dfd', action='store_true', help='output DFD')
-    _parser.add_argument('--report',
-                         help='output report using the named template file (sample template file is under docs/template.md)')
-    _parser.add_argument('--threat', help='default: /threatlib/threats.json. Set location of the threat json file)')
+    _parser.add_argument('--report', help='output report using the named template file (sample template file is under docs/template.md)')
+    _parser.add_argument('--exclude', help='specify threat IDs to be ignored')
+    _parser.add_argument('--seq', action='store_true', help='output sequential diagram')
+    _parser.add_argument('--list', action='store_true', help='list all available threats')
+    _parser.add_argument('--describe', help='describe the properties available for a given element')
 
     _args = _parser.parse_args()
-    # print(_args.report)
     return _args
